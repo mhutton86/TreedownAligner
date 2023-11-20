@@ -10,8 +10,13 @@ import { queryText } from 'workbench/query';
 import books from 'workbench/books';
 
 import placeholderTreedown from 'features/treedown/treedown.json';
+import {tsvContentReader} from "../features/translationLoader/tsvContentReader";
 
 interface WorkbenchProps {}
+
+interface HeaderPosIndex {
+  [key: string]: number;
+}
 
 const documentTitle = '🌲⬇️';
 
@@ -61,6 +66,7 @@ const getDefaultRef = (): number[] => {
 };
 
 const Workbench = (props: WorkbenchProps): ReactElement => {
+
   const [defaultBook, defaultChapter, defaultVerse] = getDefaultRef();
 
   const [updatedAlignments, setUpdatedAlignments] = useState(null);
@@ -112,6 +118,80 @@ const Workbench = (props: WorkbenchProps): ReactElement => {
 
     loadSyntaxData().catch(console.error);
   }, [bookDoc, book, chapter, verse]);
+
+  useEffect(() => {
+    const loadTargetTsvData = async () => {
+      try {
+
+        const headerLine = "xml:id\tref\trole\tclass\ttype\tenglish\tmandarin\tgloss\ttext\tafter\tlemma\tnormalized\tstrong\tmorph\tperson\tnumber\tgender\tcase\ttense\tvoice\tmood\tdegree\tdomain\tln\tframe\tsubjref\treferent"
+        const dataLine1 = "n40001001001\tMAT 1:1!1\t\tnoun\tcommon\tbook\t谱\t[The] book\tΒίβλος\t \tβίβλος\tβίβλος\t976\tN-NSF\t\tsingular\tfeminine\tnominative\t\t\t\t\t033005\t33.38\t\t\t"
+        const dataLine2 = "n40001001002\tMAT 1:1!2\t\tnoun\tcommon\tgenealogy\t族\tof [the] genealogy\tγενέσεως\t \tγένεσις\tγενέσεως\t1078\tN-GSF\t\tsingular\tfeminine\tgenitive\t\t\t\t\t010002 033003\t10.24 33.19\t\t\t"
+
+        const headers = headerLine.split('\t');
+
+        const headerPosLookup:HeaderPosIndex = {};
+        headerPosLookup['hello'] = 123;
+
+        const response = await fetch(
+            '/init/source_macula-greek-SBLGNT.tsv'
+        );
+
+        console.log('supercalifragilisticexpialidocious');
+
+        // (row, ['xml:id', 'ref', ]) => {
+        //   return {
+        //     id: row('xml:id'),
+        //     osisId: row('xml:id'),
+        //     content: row('xml:id'),
+        //     after: row('xml:id'),
+        //   }
+        // }
+        //
+        // const reader = response?.body?.getReader();
+        //
+        // // TextDecoder to handle decoding
+        // const textDecoder = new TextDecoder('utf-8');
+        //
+        // if (!response) {
+        //   console.error('response is null');
+        //   return;
+        // }
+        //
+        // if (!reader) {
+        //   console.error('reader is null');
+        //   return;
+        // }
+        //
+        // // @ts-ignore
+        // console.log('Response headers', response?.headers);
+        // let receivedLength = 0;
+        // let chunks = [];
+        //
+        // await tsvContentReader(reader);
+        //
+        // while (true) {
+        //   // @ts-ignore
+        //   const { done, value } = await reader.read();
+        //
+        //   if (done) {
+        //     break;
+        //   }
+        //
+        //   chunks.push(value);
+        //   receivedLength += value?.length;
+        //
+        //   // Calculate download progress
+        //   console.log(`Received length: ${receivedLength}`);
+        //   console.log('value', textDecoder.decode(value, { stream: true }));
+        // }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadTargetTsvData().catch(console.error);
+
+  }, []);
 
   const corpora: Corpus[] = [];
 
