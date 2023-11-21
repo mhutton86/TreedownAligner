@@ -6,9 +6,36 @@ interface CSVRow {
 }
 
 export const tsvContentReader = async (tsvContentStream: ReadableStreamDefaultReader<Uint8Array>) => {
-        // Load a TSV file by name
-        console.log("tsvContentStream.read()");
-        console.log(await tsvContentStream.read());
+    // TextDecoder to handle decoding
+    const textDecoder = new TextDecoder('utf-8');
+
+    let receivedLength = 0;
+    let headerLine: string | undefined = undefined;
+
+    while (true) {
+        // @ts-ignore
+        const {done, value} = await tsvContentStream.read();
+
+        if (done) {
+            break;
+        }
+
+        const decodedText = textDecoder.decode(value, {stream: true});
+        const lines = decodedText.split(/[\r\n]+/);
+
+        // grab the header line if we haven't
+        if (headerLine === null) {
+            headerLine = lines.shift();
+        }
+
+        lines.forEach((line, index) => {
+            console.log(line);
+        })
+
+        receivedLength += value?.length;
+
+        // Calculate download progress
+        console.log(`Received length: ${receivedLength}`);
 
 //
 //     const parsedData: CSVRow[] = [];
@@ -57,5 +84,6 @@ export const tsvContentReader = async (tsvContentStream: ReadableStreamDefaultRe
         // Allow an async way to load a range of lines
 
         // Provide an map function to pull out content by specified header
-
+    }
+    // console.log('chunks', chunks);
 }

@@ -123,67 +123,22 @@ const Workbench = (props: WorkbenchProps): ReactElement => {
     const loadTargetTsvData = async () => {
       try {
 
-        const headerLine = "xml:id\tref\trole\tclass\ttype\tenglish\tmandarin\tgloss\ttext\tafter\tlemma\tnormalized\tstrong\tmorph\tperson\tnumber\tgender\tcase\ttense\tvoice\tmood\tdegree\tdomain\tln\tframe\tsubjref\treferent"
-        const dataLine1 = "n40001001001\tMAT 1:1!1\t\tnoun\tcommon\tbook\t谱\t[The] book\tΒίβλος\t \tβίβλος\tβίβλος\t976\tN-NSF\t\tsingular\tfeminine\tnominative\t\t\t\t\t033005\t33.38\t\t\t"
-        const dataLine2 = "n40001001002\tMAT 1:1!2\t\tnoun\tcommon\tgenealogy\t族\tof [the] genealogy\tγενέσεως\t \tγένεσις\tγενέσεως\t1078\tN-GSF\t\tsingular\tfeminine\tgenitive\t\t\t\t\t010002 033003\t10.24 33.19\t\t\t"
+        const response = await fetch('/init/source_NA27-LEB.tsv');
 
-        const headers = headerLine.split('\t');
+        const reader = response?.body?.getReader();
 
-        const headerPosLookup:HeaderPosIndex = {};
-        headerPosLookup['hello'] = 123;
+        if (!response) {
+          console.error('response is null');
+          return;
+        }
 
-        const response = await fetch(
-            '/init/source_macula-greek-SBLGNT.tsv'
-        );
+        if (!reader) {
+          console.error('reader is null');
+          return;
+        }
 
-        console.log('supercalifragilisticexpialidocious');
+        await tsvContentReader(reader);
 
-        // (row, ['xml:id', 'ref', ]) => {
-        //   return {
-        //     id: row('xml:id'),
-        //     osisId: row('xml:id'),
-        //     content: row('xml:id'),
-        //     after: row('xml:id'),
-        //   }
-        // }
-        //
-        // const reader = response?.body?.getReader();
-        //
-        // // TextDecoder to handle decoding
-        // const textDecoder = new TextDecoder('utf-8');
-        //
-        // if (!response) {
-        //   console.error('response is null');
-        //   return;
-        // }
-        //
-        // if (!reader) {
-        //   console.error('reader is null');
-        //   return;
-        // }
-        //
-        // // @ts-ignore
-        // console.log('Response headers', response?.headers);
-        // let receivedLength = 0;
-        // let chunks = [];
-        //
-        // await tsvContentReader(reader);
-        //
-        // while (true) {
-        //   // @ts-ignore
-        //   const { done, value } = await reader.read();
-        //
-        //   if (done) {
-        //     break;
-        //   }
-        //
-        //   chunks.push(value);
-        //   receivedLength += value?.length;
-        //
-        //   // Calculate download progress
-        //   console.log(`Received length: ${receivedLength}`);
-        //   console.log('value', textDecoder.decode(value, { stream: true }));
-        // }
       } catch (error) {
         console.error(error);
       }
